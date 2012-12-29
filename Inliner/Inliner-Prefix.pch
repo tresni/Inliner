@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'Inliner' target in the 'Inliner' project
+//
+
+#ifdef __OBJC__
+  #import <Cocoa/Cocoa.h>
+#endif
