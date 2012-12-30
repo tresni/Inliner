@@ -9,23 +9,22 @@
 #import "MediaLivememe.h"
 
 @implementation MediaLivememe
-static NSRegularExpression *pattern = nil;
+static NSRegularExpression *regex = nil;
 
 + (void)load {
   [MediaModuleFactory registerModule:self];
-  pattern = [NSRegularExpression regularExpressionWithPattern:@"^http://(?:www.livememe.com|lvme.me)/(?!edit)([\\w]+)/?" options:NSRegularExpressionCaseInsensitive error:nil];
+  regex = [NSRegularExpression regularExpressionWithPattern:@"^http://(?:www.livememe.com|lvme.me)/(?!edit)([\\w]+)/?" options:NSRegularExpressionCaseInsensitive error:nil];
 }
 
 + (Boolean)detect:(HTMLNode *)node {
-  return [pattern numberOfMatchesInString:[node getAttributeNamed:@"href"] options:0 range:NSMakeRange(0, [[node getAttributeNamed:@"href"] length])];
+  return [regex numberOfMatchesInString:[node getAttributeNamed:@"href"] options:0 range:NSMakeRange(0, [[node getAttributeNamed:@"href"] length])];
 }
 
-+ (HTMLNode *)handleNode:(HTMLNode *)node {
++ (void)handleNode:(HTMLNode *)node {
   NSString *href = [node getAttributeNamed:@"href"];
-  NSTextCheckingResult* match = [pattern firstMatchInString:href options:0 range:NSMakeRange(0, [href length])];
+  NSTextCheckingResult* match = [regex firstMatchInString:href options:0 range:NSMakeRange(0, [href length])];
   NSString* image = [NSString stringWithFormat:@"http://www.livememe.com/%@.jpg", [href substringWithRange:[match rangeAtIndex:1]]];
   [MediaModuleFactory removeChildNodes:node->_node];
   [MediaModuleFactory imageAtNode:node->_node src:image];
-  return node;
 }
 @end
